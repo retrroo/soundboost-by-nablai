@@ -1,13 +1,40 @@
+<div align="center">
+
 # SoundBoost by Nablai ⚡
 
 > **The Next-Generation Tab Volume Booster & 5-Band Studio EQ for Google Chrome (Manifest V3)**  
 > Boost tab volume up to **600%** with studio-grade dynamics compression, a 5-band parametric equalizer, custom presets, and **zero audio clipping** — all without breaking native HTML5 fullscreen or triggering WebRTC screen-share warnings.
 
+<br />
+
+<a href="https://github.com/retrroo/soundboost-by-nablai/releases/latest/download/soundboost-by-nablai.zip">
+  <img src="https://img.shields.io/badge/⚡_DOWNLOAD_SOUNDBOOST_(.ZIP)-000000?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download SoundBoost ZIP" height="40" />
+</a>
+&nbsp;&nbsp;
+<a href="https://github.com/retrroo/soundboost-by-nablai/archive/refs/heads/main.zip">
+  <img src="https://img.shields.io/badge/📦_SOURCE_CODE_(.ZIP)-27272a?style=for-the-badge&logo=github&logoColor=white" alt="Download Source Code ZIP" height="40" />
+</a>
+
+<br /><br />
+
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-black?style=flat-square&logo=googlechrome)](https://developer.chrome.com/docs/extensions/mv3/intro/)
+[![Latest Release](https://img.shields.io/github/v/release/retrroo/soundboost-by-nablai?style=flat-square&color=blue)](https://github.com/retrroo/soundboost-by-nablai/releases/latest)
 [![Web Audio API](https://img.shields.io/badge/Audio-Web%20Audio%20API-blue?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-0%20(Pure%20Vanilla%20JS)-green?style=flat-square)](#)
 [![Design Standard](https://img.shields.io/badge/Design-Unslop%20Craft-black?style=flat-square)](https://github.com/heydamir/unslop)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+
+</div>
+
+---
+
+### 🚀 Direct Importeren in Chrome (Quick Install)
+
+1. **[Download SoundBoost (.ZIP)](https://github.com/retrroo/soundboost-by-nablai/releases/latest/download/soundboost-by-nablai.zip)** en pak het ZIP-bestand uit op je computer.
+2. Typ in Chrome: **`chrome://extensions/`** en druk op Enter.
+3. Schakel rechtsboven de toggle **Developer mode** (*Ontwikkelaarsmodus*) in.
+4. Klik linksboven op **Load unpacked** (*Uitgepakte extensie laden*) en selecteer de map.
+5. Klik op het puzzelstukje in Chrome en pin **SoundBoost by Nablai** vast aan je toolbar. Geniet van kraakhelder geluid tot 600%!
 
 ---
 
