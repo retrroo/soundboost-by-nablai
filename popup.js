@@ -30,6 +30,7 @@
     preMuteVolume: 1.0,
     gains: [0, 0, 0, 0, 0],
     profileName: 'Flat',
+    compressorEnabled: true,
     activeMediaCount: 0
   };
 
@@ -50,6 +51,10 @@
   const muteBtn = document.getElementById('muteBtn');
   const muteBtnText = document.getElementById('muteBtnText');
   const resetVolumeBtn = document.getElementById('resetVolumeBtn');
+
+  const compressorToggle = document.getElementById('compressorToggle') || document.getElementById('compressorIndicatorToggle');
+  const compressorSubtext = document.getElementById('compressorSubtext');
+  const compressorFootnote = document.getElementById('compressorFootnote');
 
   const eqToggleBtn = document.getElementById('eqToggleBtn');
   const eqDrawer = document.getElementById('eqDrawer');
@@ -166,6 +171,20 @@
       const level = Number(pill.getAttribute('data-level'));
       pill.classList.toggle('active', level === percent && !currentState.muted);
     });
+
+    if (compressorToggle) {
+      compressorToggle.checked = currentState.compressorEnabled !== false;
+    }
+    if (compressorSubtext) {
+      compressorSubtext.textContent = currentState.compressorEnabled !== false
+        ? 'Anti-clipping active (-6dB / 8:1)'
+        : 'Bypassed (raw uncompressed)';
+    }
+    if (compressorFootnote) {
+      compressorFootnote.textContent = currentState.compressorEnabled !== false
+        ? 'Compressor Active'
+        : 'Compressor Bypassed';
+    }
   }
 
   /**
@@ -250,6 +269,7 @@
       if (chrome.runtime.lastError) return;
       if (response && response.state) {
         Object.assign(currentState, response.state);
+        renderVolumeUI();
         renderMediaStatus();
       }
       if (typeof callback === 'function') {
@@ -272,6 +292,7 @@
           preMuteVolume: currentState.preMuteVolume,
           gains: currentState.gains,
           profileName: currentState.profileName,
+          compressorEnabled: currentState.compressorEnabled,
           lastUpdated: Date.now()
         }
       });
@@ -393,6 +414,19 @@
     sendTabMessage({ action: 'RESET_VOLUME' });
     persistDomainState();
   });
+
+  // 4b. Dynamics Compressor Toggle
+  if (compressorToggle) {
+    compressorToggle.addEventListener('change', (e) => {
+      currentState.compressorEnabled = e.target.checked;
+      renderVolumeUI();
+      sendTabMessage({
+        action: 'SET_COMPRESSOR',
+        enabled: currentState.compressorEnabled
+      });
+      persistDomainState();
+    });
+  }
 
   // 5. Equalizer Drawer Toggle
   eqToggleBtn.addEventListener('click', () => {
@@ -768,6 +802,7 @@
           if (typeof savedDomain.preMuteVolume === 'number') currentState.preMuteVolume = savedDomain.preMuteVolume;
           if (Array.isArray(savedDomain.gains)) currentState.gains = savedDomain.gains;
           if (savedDomain.profileName) currentState.profileName = savedDomain.profileName;
+          if (typeof savedDomain.compressorEnabled === 'boolean') currentState.compressorEnabled = savedDomain.compressorEnabled;
         }
 
         renderVolumeUI();

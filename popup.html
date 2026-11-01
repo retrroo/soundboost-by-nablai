@@ -110,7 +110,7 @@
       <div class="telemetry-card">
         <span class="telemetry-title">DYNAMIC GAIN</span>
         <span id="dbReadout" class="telemetry-value">+0.0 dB</span>
-        <span class="telemetry-footnote">Compressor Active</span>
+        <span class="telemetry-footnote" id="compressorFootnote">Compressor Active</span>
       </div>
     </section>
 
@@ -238,14 +238,14 @@
         </button>
       </div>
 
-      <!-- Compressor Status Row (Identical to Nabla Cookie Auto-Reject row with toggle) -->
+      <!-- Dynamics Compressor Row with Interactive Toggle -->
       <div class="control-row">
         <div class="control-info">
           <span class="control-label">Dynamics Compressor</span>
-          <span class="control-subtext">Anti-clipping active (-6dB / 8:1)</span>
+          <span class="control-subtext" id="compressorSubtext">Anti-clipping active (-6dB / 8:1)</span>
         </div>
-        <label class="switch" title="Hardware Dynamics Compressor Protected">
-          <input type="checkbox" id="compressorIndicatorToggle" checked disabled>
+        <label class="switch" title="Toggle Hardware Dynamics Compressor Protection">
+          <input type="checkbox" id="compressorToggle" checked>
           <span class="slider round"></span>
         </label>
       </div>

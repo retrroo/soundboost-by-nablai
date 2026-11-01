@@ -28,6 +28,7 @@
     preMuteVolume: 1.0,
     gains: [0, 0, 0, 0, 0],
     profileName: 'Flat',
+    compressorEnabled: true,
     activeMediaCount: 0,
     hostname: hostname
   };
@@ -56,6 +57,7 @@
         preMuteVolume: stateToSave.preMuteVolume,
         gains: stateToSave.gains,
         profileName: stateToSave.profileName,
+        compressorEnabled: typeof stateToSave.compressorEnabled === 'boolean' ? stateToSave.compressorEnabled : true,
         lastUpdated: Date.now()
       };
       chrome.storage.local.set({ [storageKey]: data }, () => {
@@ -93,6 +95,7 @@
         cachedState.preMuteVolume = typeof saved.preMuteVolume === 'number' ? saved.preMuteVolume : 1.0;
         cachedState.gains = Array.isArray(saved.gains) ? saved.gains : [0, 0, 0, 0, 0];
         cachedState.profileName = saved.profileName || 'Flat';
+        cachedState.compressorEnabled = typeof saved.compressorEnabled === 'boolean' ? saved.compressorEnabled : true;
 
         postToMain({
           action: 'SET_STATE',
@@ -100,7 +103,8 @@
           muted: cachedState.muted,
           preMuteVolume: cachedState.preMuteVolume,
           gains: cachedState.gains,
-          profileName: cachedState.profileName
+          profileName: cachedState.profileName,
+          compressorEnabled: cachedState.compressorEnabled
         });
 
         notifyBadgeUpdate();
@@ -198,6 +202,11 @@
     } else if (message.action === 'SET_EQ') {
       if (Array.isArray(message.gains)) cachedState.gains = message.gains;
       if (message.profileName) cachedState.profileName = message.profileName;
+      persistStateToStorage(cachedState);
+    } else if (message.action === 'SET_COMPRESSOR') {
+      if (typeof message.enabled === 'boolean') {
+        cachedState.compressorEnabled = message.enabled;
+      }
       persistStateToStorage(cachedState);
     } else if (message.action === 'RESET_VOLUME') {
       cachedState.volume = 1.0;

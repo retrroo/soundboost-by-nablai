@@ -112,6 +112,7 @@
     preMuteVolume: 1.0,
     gains: [0, 0, 0, 0, 0],
     profileName: 'Flat',
+    compressorEnabled: true,
     activeMediaCount: 0
   };
 
@@ -179,8 +180,7 @@
       compressor.attack.setValueAtTime(0.003, audioCtx.currentTime);
       compressor.release.setValueAtTime(0.25, audioCtx.currentTime);
 
-      masterGain.connect(compressor);
-      compressor.connect(audioCtx.destination);
+      applyCompressorRouting();
       log('AUDIO_CTX', 'Web Audio pipeline nodes connected successfully');
     }
 
@@ -218,6 +218,30 @@
       }
     });
     log('EQ', 'Applied EQ band gains', gains);
+  }
+
+  function applyCompressor(enabled) {
+    state.compressorEnabled = Boolean(enabled);
+    applyCompressorRouting();
+  }
+
+  function applyCompressorRouting() {
+    if (!audioCtx || !masterGain || !compressor) return;
+    try {
+      masterGain.disconnect();
+      compressor.disconnect();
+
+      if (state.compressorEnabled !== false) {
+        masterGain.connect(compressor);
+        compressor.connect(audioCtx.destination);
+        log('COMPRESSOR', 'Dynamics compressor active (-6dB / 8:1)');
+      } else {
+        masterGain.connect(audioCtx.destination);
+        log('COMPRESSOR', 'Dynamics compressor bypassed (raw audio output)');
+      }
+    } catch (err) {
+      log('WARN', 'Error applying compressor routing:', err.message);
+    }
   }
 
   /**
@@ -472,6 +496,7 @@
         preMuteVolume: state.preMuteVolume,
         gains: [...state.gains],
         profileName: state.profileName,
+        compressorEnabled: state.compressorEnabled,
         activeMediaCount: trackedElements.size,
         audioContextState: audioCtx ? audioCtx.state : 'uninitialized',
         logCount: window.__SONICBOOST_LOGS__.length
@@ -533,6 +558,14 @@
         break;
       }
 
+      case 'SET_COMPRESSOR': {
+        if (typeof msg.enabled === 'boolean') {
+          applyCompressor(msg.enabled);
+        }
+        broadcastState();
+        break;
+      }
+
       case 'SET_STATE': {
         if (typeof msg.volume === 'number') state.volume = Math.max(0.0, Math.min(6.0, msg.volume));
         if (typeof msg.muted === 'boolean') state.muted = msg.muted;
@@ -542,6 +575,9 @@
           applyEQ(state.gains);
         }
         if (msg.profileName) state.profileName = String(msg.profileName);
+        if (typeof msg.compressorEnabled === 'boolean') {
+          applyCompressor(msg.compressorEnabled);
+        }
         applyVolume(state.volume);
         broadcastState();
         break;
