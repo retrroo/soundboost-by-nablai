@@ -1,7 +1,7 @@
 /**
- * SoundBoost by Nablai - Controller
- * Fast, pure vanilla JS, zero decorative bloat.
- * Features built-in diagnostic logs viewer & clipboard export.
+ * SoundBoost by Nablai — Controller
+ * Strict Monochrome Craft & Studio Web Audio Engine.
+ * Features built-in diagnostic telemetry monitor, 5-band EQ, and dynamic constellation canvas.
  */
 
 (function () {
@@ -34,8 +34,11 @@
   };
 
   // 3. DOM Elements
-  const domainPill = document.getElementById('domainPill');
   const domainDisplay = document.getElementById('domainDisplay');
+  const domainPill = document.getElementById('domainPill');
+  const statusPill = document.getElementById('status-pill');
+  const statusText = document.getElementById('status-text');
+  const globalStateIndicator = document.getElementById('global-state-indicator');
 
   const volumePercent = document.getElementById('volumePercent');
   const dbReadout = document.getElementById('dbReadout');
@@ -46,8 +49,6 @@
 
   const muteBtn = document.getElementById('muteBtn');
   const muteBtnText = document.getElementById('muteBtnText');
-  const unmuteIcon = document.getElementById('unmuteIcon');
-  const muteIcon = document.getElementById('muteIcon');
   const resetVolumeBtn = document.getElementById('resetVolumeBtn');
 
   const eqToggleBtn = document.getElementById('eqToggleBtn');
@@ -131,35 +132,32 @@
     const isBoost = percent > 100;
     const isOverdrive = percent > 300;
 
-    // Headroom badge & text
     if (currentState.muted) {
       volumePercent.textContent = '0';
       dbReadout.textContent = '-inf dB';
-      muteBtn.classList.add('active');
-      muteBtnText.textContent = 'Unmute';
-      unmuteIcon.classList.add('hidden');
-      muteIcon.classList.remove('hidden');
+      muteBtn.classList.remove('active');
+      muteBtnText.textContent = 'Audio Muted';
+      if (globalStateIndicator) globalStateIndicator.textContent = 'MUTED';
+      if (statusPill) statusPill.className = 'status-pill paused-status';
+      if (statusText) statusText.textContent = 'MUTED';
 
-      overdriveBadge.textContent = 'Muted';
-      overdriveBadge.className = 'status-tag max';
+      overdriveBadge.textContent = 'Output Muted';
     } else {
       volumePercent.textContent = `${percent}`;
       const dbStr = gainToDb(currentState.volume);
       dbReadout.textContent = `${dbStr} dB`;
-      muteBtn.classList.remove('active');
-      muteBtnText.textContent = 'Mute';
-      unmuteIcon.classList.remove('hidden');
-      muteIcon.classList.add('hidden');
+      muteBtn.classList.add('active');
+      muteBtnText.textContent = 'Audio Enabled';
+      if (globalStateIndicator) globalStateIndicator.textContent = 'ENABLED';
+      if (statusPill) statusPill.className = 'status-pill active-status';
+      if (statusText) statusText.textContent = 'ACTIVE';
 
       if (isOverdrive) {
-        overdriveBadge.textContent = 'Overdrive';
-        overdriveBadge.className = 'status-tag max';
+        overdriveBadge.textContent = 'Overdrive Active';
       } else if (isBoost) {
-        overdriveBadge.textContent = `${dbStr} dB`;
-        overdriveBadge.className = 'status-tag boost';
+        overdriveBadge.textContent = `Gain +${percent - 100}%`;
       } else {
-        overdriveBadge.textContent = 'Standard';
-        overdriveBadge.className = 'status-tag';
+        overdriveBadge.textContent = 'Range 0% – 600%';
       }
     }
 
@@ -190,9 +188,9 @@
    * Update domain connection status.
    */
   function renderMediaStatus() {
-    domainDisplay.textContent = currentHostname;
-    const count = currentState.activeMediaCount || 0;
-    domainPill.classList.toggle('active', count > 0);
+    if (domainDisplay) {
+      domainDisplay.textContent = currentHostname;
+    }
   }
 
   /**
@@ -301,7 +299,6 @@
       }
 
       logsContainer.innerHTML = '';
-      // Render latest 50 entries
       const slice = logs.slice(-50);
       slice.forEach(item => {
         const row = document.createElement('div');
@@ -320,11 +317,9 @@
         logsContainer.appendChild(row);
       });
 
-      // Scroll to bottom
       logsContainer.scrollTop = logsContainer.scrollHeight;
     });
 
-    // Also ask tab content script for live logs
     sendTabMessage({ action: 'GET_LOGS' }, (res) => {
       if (res && Array.isArray(res.logs) && res.logs.length > 0) {
         cachedLogs = res.logs;
@@ -375,7 +370,7 @@
     });
   });
 
-  // 3. Mute / Unmute Button
+  // 3. Mute / Unmute Button (Master Pill Toggle)
   muteBtn.addEventListener('click', () => {
     currentState.muted = !currentState.muted;
     if (currentState.muted) {
@@ -404,7 +399,9 @@
     const isExpanded = eqToggleBtn.getAttribute('aria-expanded') === 'true';
     const nextState = !isExpanded;
     eqToggleBtn.setAttribute('aria-expanded', String(nextState));
+    eqToggleBtn.textContent = nextState ? 'Close' : 'Manage';
     eqDrawer.classList.toggle('collapsed', !nextState);
+    eqDrawer.hidden = !nextState;
 
     chrome.storage.local.set({ sonic_eq_drawer_open: nextState });
   });
@@ -414,7 +411,9 @@
     const isExpanded = logsToggleBtn.getAttribute('aria-expanded') === 'true';
     const nextState = !isExpanded;
     logsToggleBtn.setAttribute('aria-expanded', String(nextState));
+    logsToggleBtn.textContent = nextState ? 'Close Console' : 'Open Console ↗';
     logsDrawer.classList.toggle('collapsed', !nextState);
+    logsDrawer.hidden = !nextState;
 
     if (nextState) {
       loadAndRenderLogs();
@@ -427,11 +426,10 @@
       const logs = Array.isArray(res.sonic_debug_logs) ? res.sonic_debug_logs : cachedLogs;
       if (logs.length === 0) {
         copyLogsBtnText.textContent = 'No logs!';
-        setTimeout(() => { copyLogsBtnText.textContent = 'Copy logs'; }, 1500);
+        setTimeout(() => { copyLogsBtnText.textContent = 'Copy Logs'; }, 1500);
         return;
       }
 
-      // Format as readable diagnostic report
       const formatted = logs.map(e => {
         const dataStr = e.data ? ` | ${JSON.stringify(e.data)}` : '';
         return `[${e.timeStr || ''}] [${e.category}] ${e.message}${dataStr}`;
@@ -441,9 +439,8 @@
 
       navigator.clipboard.writeText(fullReport).then(() => {
         copyLogsBtnText.textContent = 'Copied!';
-        setTimeout(() => { copyLogsBtnText.textContent = 'Copy logs'; }, 1800);
+        setTimeout(() => { copyLogsBtnText.textContent = 'Copy Logs'; }, 1800);
       }).catch(() => {
-        // Fallback using textarea
         const ta = document.createElement('textarea');
         ta.value = fullReport;
         document.body.appendChild(ta);
@@ -451,7 +448,7 @@
         document.execCommand('copy');
         document.body.removeChild(ta);
         copyLogsBtnText.textContent = 'Copied!';
-        setTimeout(() => { copyLogsBtnText.textContent = 'Copy logs'; }, 1800);
+        setTimeout(() => { copyLogsBtnText.textContent = 'Copy Logs'; }, 1800);
       });
     });
   });
@@ -519,6 +516,7 @@
     isEditingPreset = false;
     presetNameInput.value = '';
     presetConfirmBtn.textContent = 'Save';
+    presetModal.style.display = 'flex';
     presetModal.classList.remove('hidden');
     presetNameInput.focus();
   });
@@ -531,11 +529,13 @@
     editingPresetOriginalName = currentName;
     presetNameInput.value = currentName;
     presetConfirmBtn.textContent = 'Rename';
+    presetModal.style.display = 'flex';
     presetModal.classList.remove('hidden');
     presetNameInput.focus();
   });
 
   presetCancelBtn.addEventListener('click', () => {
+    presetModal.style.display = 'none';
     presetModal.classList.add('hidden');
     presetNameInput.value = '';
   });
@@ -557,6 +557,7 @@
     currentState.profileName = name;
 
     persistCustomProfiles();
+    presetModal.style.display = 'none';
     presetModal.classList.add('hidden');
     presetNameInput.value = '';
 
@@ -604,41 +605,45 @@
   // --- 12. Theme Manager ---
   function applyTheme(theme) {
     const isDark = theme === 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
     document.body.classList.toggle('dark-theme', isDark);
+
     if (sunIcon && moonIcon) {
-      sunIcon.classList.toggle('hidden', !isDark);
-      moonIcon.classList.toggle('hidden', isDark);
+      sunIcon.style.display = isDark ? 'block' : 'none';
+      moonIcon.style.display = isDark ? 'none' : 'block';
     }
+
     chrome.storage.local.set({ soundboost_theme: theme });
   }
 
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', () => {
-      const isDark = document.body.classList.contains('dark-theme');
-      applyTheme(isDark ? 'light' : 'dark');
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+      applyTheme(nextTheme);
     });
   }
 
-  // --- 13. Ambient Constellation Particles Canvas ---
-  function initCosmicCanvas() {
-    const canvas = document.getElementById('cosmicCanvas');
+  // --- 13. Dynamic Particle Constellation Canvas (Exact Nabla Engine) ---
+  function initParticleCanvas() {
+    const canvas = document.getElementById('popup-canvas') || document.getElementById('cosmicCanvas');
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    let width = (canvas.width = window.innerWidth || 348);
-    let height = (canvas.height = window.innerHeight || 500);
+    let width = (canvas.width = window.innerWidth || 368);
+    let height = (canvas.height = window.innerHeight || 540);
 
-    const PARTICLE_COUNT = 24;
+    const PARTICLE_COUNT = 28;
     const particles = [];
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.22,
-        vy: (Math.random() - 0.5) * 0.22,
-        radius: Math.random() * 1.2 + 0.6,
-        alpha: Math.random() * 0.45 + 0.25
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25,
+        radius: Math.random() * 1.2 + 0.8,
+        alpha: Math.random() * 0.4 + 0.3
       });
     }
 
@@ -646,8 +651,7 @@
 
     function render() {
       ctx.clearRect(0, 0, width, height);
-
-      const isDark = document.body.classList.contains('dark-theme');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark' || document.body.classList.contains('dark-theme');
 
       // Connecting lines
       for (let i = 0; i < particles.length; i++) {
@@ -661,7 +665,7 @@
             if (isDark) {
               ctx.strokeStyle = `rgba(255, 255, 255, ${lineAlpha * 0.12})`;
             } else {
-              ctx.strokeStyle = `rgba(0, 0, 0, ${lineAlpha * 0.08})`;
+              ctx.strokeStyle = `rgba(18, 18, 20, ${lineAlpha * 0.07})`;
             }
             ctx.lineWidth = 0.6;
             ctx.beginPath();
@@ -672,7 +676,7 @@
         }
       }
 
-      // Draw constellation dots
+      // Constellation dots
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
@@ -683,9 +687,9 @@
         if (p.y > height) p.y = 0;
 
         if (isDark) {
-          ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha * 0.75})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha * 0.7})`;
         } else {
-          ctx.fillStyle = `rgba(0, 0, 0, ${p.alpha * 0.45})`;
+          ctx.fillStyle = `rgba(18, 18, 20, ${p.alpha * 0.35})`;
         }
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
@@ -697,6 +701,11 @@
 
     render();
 
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth || 368;
+      height = canvas.height = window.innerHeight || 540;
+    }, { passive: true });
+
     window.addEventListener('unload', () => {
       if (animationId) cancelAnimationFrame(animationId);
     });
@@ -704,18 +713,18 @@
 
   // --- 14. Initialization ---
   function init() {
-    initCosmicCanvas();
+    initParticleCanvas();
 
-    // Load theme preference (defaults to dark mode if preferred or stored)
+    // Default to Light theme as in Nabla official screenshot, or respect stored choice
     chrome.storage.local.get(['soundboost_theme'], (res) => {
-      const savedTheme = res.soundboost_theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const savedTheme = res.soundboost_theme || 'light';
       applyTheme(savedTheme);
     });
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const activeTab = tabs && tabs[0];
       if (!activeTab || !activeTab.id) {
-        domainDisplay.textContent = 'Unavailable';
+        if (domainDisplay) domainDisplay.textContent = 'Unavailable';
         return;
       }
 
@@ -728,11 +737,11 @@
           currentHostname = 'System tab';
         }
       } catch (e) {
-        currentHostname = 'Tab';
+        currentHostname = 'Active Tab';
       }
 
       storageKey = `domain_${currentHostname}`;
-      domainDisplay.textContent = currentHostname;
+      if (domainDisplay) domainDisplay.textContent = currentHostname;
 
       chrome.storage.local.get(['sonic_custom_profiles', 'sonic_eq_drawer_open', storageKey, 'sonic_debug_logs'], (result) => {
         if (result.sonic_custom_profiles) {
@@ -742,7 +751,9 @@
 
         if (result.sonic_eq_drawer_open === true) {
           eqToggleBtn.setAttribute('aria-expanded', 'true');
+          eqToggleBtn.textContent = 'Close';
           eqDrawer.classList.remove('collapsed');
+          eqDrawer.hidden = false;
         }
 
         if (Array.isArray(result.sonic_debug_logs)) {

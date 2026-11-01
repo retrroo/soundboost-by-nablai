@@ -1,78 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SoundBoost by Nablai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <!-- Ambient Particles Canvas -->
-  <canvas id="cosmicCanvas"></canvas>
+  <!-- Dynamic Constellation Particle Canvas -->
+  <canvas id="popup-canvas" class="popup-canvas"></canvas>
 
-  <div class="app-shell">
-    <!-- Header -->
-    <header class="app-header">
-      <div class="header-brand">
-        <!-- Audio Soundwave Waveform Logo -->
-        <div class="audio-logo-mark" aria-label="SoundBoost Audio Logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <line x1="4" y1="15" x2="4" y2="9"/>
-            <line x1="8" y1="18" x2="8" y2="6"/>
-            <line x1="12" y1="21" x2="12" y2="3"/>
-            <line x1="16" y1="18" x2="16" y2="6"/>
-            <line x1="20" y1="15" x2="20" y2="9"/>
-          </svg>
-        </div>
-        <div class="brand-info">
-          <span class="brand-title">SoundBoost</span>
-          <span class="brand-byline">by Nablai</span>
-        </div>
+  <div class="popup-wrapper">
+    <!-- Header (Identical to Nabla design system) -->
+    <header class="popup-header">
+      <div class="brand-group">
+        <svg class="brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.4L19.7 5.8V11.5C19.7 16.7 16.4 20.6 12 22C7.6 20.6 4.3 16.7 4.3 11.5V5.8L12 2.4Z" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+          <circle cx="12" cy="11.5" r="3.7" stroke="currentColor" stroke-width="1.65"/>
+          <line x1="9.4" y1="8.9" x2="14.6" y2="14.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-title">NABLA</span>
       </div>
 
-      <div class="header-meta">
-        <div class="domain-pill" id="domainPill" title="Active Tab">
-          <span class="signal-dot" id="statusPulse"></span>
-          <span class="domain-text" id="domainDisplay">Connecting...</span>
-        </div>
-
-        <button type="button" id="themeToggleBtn" class="btn-theme-toggle" title="Toggle Dark/Light mode" aria-label="Toggle Theme">
-          <svg id="moonIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      <div class="header-right-actions">
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode">
+          <svg id="sunIcon" class="theme-icon-sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
-          <svg id="sunIcon" class="hidden" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/>
-            <line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/>
-            <line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          <svg id="moonIcon" class="theme-icon-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
+
+        <div id="status-pill" class="status-pill active-status">
+          <span class="status-dot"></span>
+          <span id="status-text">ACTIVE</span>
+        </div>
       </div>
     </header>
 
-    <!-- Master Gain Card -->
-    <main class="gain-card">
-      <div class="gain-display-row">
-        <div class="gain-figure-group">
-          <span class="figure-number" id="volumePercent">100</span>
-          <span class="figure-symbol">%</span>
-        </div>
-
-        <div class="gain-metrics-group">
-          <div class="metric-pill">
-            <span class="metric-label">Gain</span>
-            <span class="metric-value" id="dbReadout">+0.0 dB</span>
-          </div>
-          <span class="status-tag" id="overdriveBadge">Clean</span>
-        </div>
+    <!-- Master Switch Hero Card (Global Audio Gain & Mute) -->
+    <section class="master-switch-card">
+      <div class="master-switch-header">
+        <span class="card-caption">MASTER VOLUME</span>
+        <span id="global-state-indicator" class="state-indicator">ENABLED</span>
       </div>
 
-      <!-- Precision Slider -->
+      <!-- Master Mute Toggle Pill -->
+      <button id="muteBtn" class="master-pill-btn active" type="button" aria-label="Toggle Audio Playback">
+        <div class="toggle-slider-track">
+          <div class="toggle-slider-knob"></div>
+        </div>
+        <span id="muteBtnText" class="master-label">Audio Enabled</span>
+        <svg id="unmuteIcon" class="hidden" width="0" height="0"></svg>
+        <svg id="muteIcon" class="hidden" width="0" height="0"></svg>
+      </button>
+
+      <!-- Precision Volume Range Slider -->
       <div class="slider-field">
         <div class="slider-rail">
           <div class="slider-fill" id="volumeFill"></div>
@@ -84,127 +79,93 @@
           max="600" 
           value="100" 
           step="1"
-          aria-label="Volume Gain Slider"
+          aria-label="Master Volume Slider"
         >
         <div class="slider-ticks">
-          <span class="tick" style="left: 0%;">0</span>
+          <span class="tick" style="left: 0%;">0%</span>
           <span class="tick base-tick" style="left: 16.66%;">100%</span>
-          <span class="tick" style="left: 33.33%;">200</span>
-          <span class="tick" style="left: 66.66%;">400</span>
+          <span class="tick" style="left: 33.33%;">200%</span>
+          <span class="tick" style="left: 66.66%;">400%</span>
           <span class="tick" style="left: 100%;">600%</span>
         </div>
       </div>
 
-      <!-- Segmented Quick Gain Steps -->
-      <div class="gain-steps" role="group" aria-label="Gain presets">
+      <!-- Quick Gain Presets (Pill group) -->
+      <div class="gain-steps" role="group" aria-label="Quick gain steps">
         <button type="button" class="step-btn active" data-level="100">100%</button>
         <button type="button" class="step-btn" data-level="200">200%</button>
         <button type="button" class="step-btn" data-level="300">300%</button>
         <button type="button" class="step-btn" data-level="400">400%</button>
         <button type="button" class="step-btn" data-level="600">600%</button>
       </div>
+    </section>
 
-      <!-- Primary Actions -->
-      <div class="actions-group">
-        <button type="button" id="muteBtn" class="btn btn-action" title="Toggle Mute">
-          <svg id="unmuteIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-          </svg>
-          <svg id="muteIcon" class="hidden" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-            <line x1="23" y1="9" x2="17" y2="15"/>
-            <line x1="17" y1="9" x2="23" y2="15"/>
-          </svg>
-          <span id="muteBtnText">Mute</span>
-        </button>
+    <!-- Telemetry Grid (Identical to 2-card Nabla stats layout) -->
+    <section class="telemetry-grid">
+      <div class="telemetry-card">
+        <span class="telemetry-title">OUTPUT VOLUME</span>
+        <span id="volumePercent" class="telemetry-value">100</span>
+        <span class="telemetry-footnote" id="overdriveBadge">Range 0% – 600%</span>
+      </div>
+      <div class="telemetry-card">
+        <span class="telemetry-title">DYNAMIC GAIN</span>
+        <span id="dbReadout" class="telemetry-value">+0.0 dB</span>
+        <span class="telemetry-footnote">Compressor Active</span>
+      </div>
+    </section>
 
-        <button type="button" id="resetVolumeBtn" class="btn btn-action secondary" title="Reset to standard 100%">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-            <path d="M3 3v5h5"/>
-          </svg>
-          <span>Reset 100%</span>
+    <!-- Controls Panel (Cards with rows & divider lines) -->
+    <section class="controls-card">
+      <!-- Active Tab Domain Row -->
+      <div class="control-row" id="domain-row">
+        <div class="control-info" id="domainPill">
+          <span class="control-label" id="domainDisplay">Connecting...</span>
+          <span class="control-subtext" id="domainSubtext">Audio hooked to active tab</span>
+        </div>
+        <button id="resetVolumeBtn" class="secondary-pill-btn" type="button">
+          Reset 100%
         </button>
       </div>
-    </main>
 
-    <!-- Equalizer Section -->
-    <section class="eq-section">
-      <button type="button" class="eq-header-btn" id="eqToggleBtn" aria-expanded="false" aria-controls="eqDrawer">
-        <div class="eq-header-left">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="4" y1="21" x2="4" y2="14"/>
-            <line x1="4" y1="10" x2="4" y2="3"/>
-            <line x1="12" y1="21" x2="12" y2="12"/>
-            <line x1="12" y1="8" x2="12" y2="3"/>
-            <line x1="20" y1="21" x2="20" y2="16"/>
-            <line x1="20" y1="12" x2="20" y2="3"/>
-            <line x1="1" y1="14" x2="7" y2="14"/>
-            <line x1="9" y1="8" x2="15" y2="8"/>
-            <line x1="17" y1="16" x2="23" y2="16"/>
-          </svg>
-          <span class="eq-title">5-band equalizer</span>
-          <span class="preset-badge" id="activeProfilePill">Flat</span>
+      <!-- 5-Band Equalizer Drawer Trigger Row -->
+      <div class="control-row whitelist-header-row">
+        <div class="control-info">
+          <span class="control-label">5-Band Equalizer</span>
+          <span class="control-subtext">Active Preset: <span id="activeProfilePill">Flat</span></span>
+        </div>
+        <button id="eqToggleBtn" class="secondary-pill-btn" type="button" aria-expanded="false">
+          Manage
+        </button>
+      </div>
+
+      <!-- Expandable Equalizer Drawer -->
+      <div id="eqDrawer" class="whitelist-drawer collapsed" hidden>
+        <!-- Preset selector row -->
+        <div class="whitelist-form">
+          <select id="presetSelect" class="whitelist-input" aria-label="Equalizer Preset">
+            <optgroup label="Built-in Presets" id="builtinOptGroup">
+              <option value="Flat">Flat</option>
+              <option value="Bass Boost">Bass Boost</option>
+              <option value="Vocal Clarity">Vocal Clarity</option>
+              <option value="Late Night">Late Night</option>
+            </optgroup>
+            <optgroup label="Custom Profiles" id="customOptGroup">
+              <!-- Dynamically populated -->
+            </optgroup>
+          </select>
+          <button type="button" id="savePresetBtn" class="primary-mini-pill-btn">+ Save</button>
+          <button type="button" id="renamePresetBtn" class="whitelist-remove-btn" title="Rename preset" disabled>✎</button>
+          <button type="button" id="deletePresetBtn" class="whitelist-remove-btn" title="Delete preset" disabled>✕</button>
         </div>
 
-        <svg class="chevron-icon" id="eqChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-      </button>
-
-      <!-- Collapsible Drawer -->
-      <div class="eq-drawer collapsed" id="eqDrawer">
-        <!-- Preset Controls Bar -->
-        <div class="preset-bar">
-          <div class="preset-select-field">
-            <label for="presetSelect" class="sr-only">EQ Preset</label>
-            <select id="presetSelect" class="preset-select">
-              <optgroup label="Built-in presets" id="builtinOptGroup">
-                <option value="Flat">Flat</option>
-                <option value="Bass Boost">Bass Boost</option>
-                <option value="Vocal Clarity">Vocal Clarity</option>
-                <option value="Late Night">Late Night</option>
-              </optgroup>
-              <optgroup label="Custom profiles" id="customOptGroup">
-                <!-- Dynamically populated -->
-              </optgroup>
-            </select>
-          </div>
-
-          <div class="preset-actions">
-            <button type="button" id="savePresetBtn" class="btn btn-subtle" title="Save new preset">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              <span>Save</span>
-            </button>
-            <button type="button" id="renamePresetBtn" class="btn-icon" title="Rename preset" disabled>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-              </svg>
-            </button>
-            <button type="button" id="deletePresetBtn" class="btn-icon danger" title="Delete preset" disabled>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-              </svg>
-            </button>
-          </div>
+        <!-- Inline preset save/rename form -->
+        <div id="presetModal" class="whitelist-form hidden" style="display: none;">
+          <input type="text" id="presetNameInput" class="whitelist-input" placeholder="Preset name..." maxlength="24">
+          <button type="button" id="presetConfirmBtn" class="primary-mini-pill-btn">Save</button>
+          <button type="button" id="presetCancelBtn" class="secondary-pill-btn" style="height: 32px;">Cancel</button>
         </div>
 
-        <!-- Inline Preset Form -->
-        <div class="preset-dialog hidden" id="presetModal">
-          <input type="text" id="presetNameInput" class="input-text" placeholder="Preset name..." maxlength="24">
-          <div class="dialog-actions">
-            <button type="button" id="presetConfirmBtn" class="btn btn-primary-sm">Save</button>
-            <button type="button" id="presetCancelBtn" class="btn btn-secondary-sm">Cancel</button>
-          </div>
-        </div>
-
-        <!-- 5-Band Faders -->
+        <!-- 5-Band Vertical Faders Rack -->
         <div class="faders-grid">
           <!-- Band 0: 60Hz LowShelf -->
           <div class="fader-col" data-band="0">
@@ -272,67 +233,56 @@
           </div>
         </div>
 
-        <div class="eq-footer">
-          <button type="button" id="resetEqBtn" class="btn-text">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-              <path d="M3 3v5h5"/>
-            </svg>
-            <span>Reset EQ to flat</span>
-          </button>
+        <button type="button" id="resetEqBtn" class="secondary-pill-btn" style="width: 100%; justify-content: center; height: 32px;">
+          Reset EQ to Flat
+        </button>
+      </div>
+
+      <!-- Compressor Status Row (Identical to Nabla Cookie Auto-Reject row with toggle) -->
+      <div class="control-row">
+        <div class="control-info">
+          <span class="control-label">Dynamics Compressor</span>
+          <span class="control-subtext">Anti-clipping active (-6dB / 8:1)</span>
         </div>
+        <label class="switch" title="Hardware Dynamics Compressor Protected">
+          <input type="checkbox" id="compressorIndicatorToggle" checked disabled>
+          <span class="slider round"></span>
+        </label>
       </div>
     </section>
 
-    <!-- Diagnostics & Logs Section (Unslop tool-first monitoring) -->
-    <section class="logs-section">
-      <button type="button" class="logs-header-btn" id="logsToggleBtn" aria-expanded="false" aria-controls="logsDrawer">
-        <div class="logs-header-left">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="4 17 10 11 4 5"/>
-            <line x1="12" y1="19" x2="20" y2="19"/>
-          </svg>
-          <span class="logs-title">Diagnostic logs</span>
-          <span class="logs-count-badge" id="logsCountBadge">0 events</span>
+    <!-- Diagnostics Console Entry Card -->
+    <section class="diagnostics-card">
+      <div class="diagnostics-info">
+        <div class="diagnostics-title-group">
+          <span class="diagnostics-pulse-dot"></span>
+          <span class="diagnostics-label">Diagnostics &amp; Log Monitor</span>
         </div>
-
-        <svg class="chevron-icon" id="logsChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
+        <span class="diagnostics-subtext"><span id="logsCountBadge">0</span> telemetry events recorded</span>
+      </div>
+      <button id="logsToggleBtn" class="secondary-pill-btn debugger-launch-btn" type="button" aria-expanded="false">
+        Open Console &nearr;
       </button>
-
-      <div class="logs-drawer collapsed" id="logsDrawer">
-        <div class="logs-toolbar">
-          <button type="button" id="copyLogsBtn" class="btn btn-subtle" title="Copy all logs to clipboard">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            <span id="copyLogsBtnText">Copy logs</span>
-          </button>
-          <button type="button" id="clearLogsBtn" class="btn-icon" title="Clear logs">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"/>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            </svg>
-          </button>
-        </div>
-
-        <div class="logs-terminal" id="logsContainer">
-          <div class="log-empty">No events logged yet. Play audio or toggle fullscreen to capture telemetry.</div>
-        </div>
-      </div>
     </section>
 
-    <!-- Telemetry Footer -->
-    <footer class="app-footer">
-      <div class="telemetry-bar">
-        <div class="telemetry-item">
-          <span class="status-indicator"></span>
-          <span class="status-name">Dynamics compressor active</span>
-        </div>
-        <span class="status-values">-6 dB / 8:1</span>
+    <!-- Expandable Diagnostics Logs Drawer -->
+    <div id="logsDrawer" class="whitelist-drawer collapsed" hidden>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+        <button type="button" id="copyLogsBtn" class="secondary-pill-btn" style="height: 30px; font-size: 10px;">
+          <span id="copyLogsBtnText">Copy Logs</span>
+        </button>
+        <button type="button" id="clearLogsBtn" class="secondary-pill-btn" style="height: 30px; font-size: 10px; color: #dc2626;">
+          Clear Logs
+        </button>
       </div>
+      <div class="logs-terminal" id="logsContainer">
+        <div class="log-empty">No events logged yet. Play audio or toggle fullscreen to capture telemetry.</div>
+      </div>
+    </div>
+
+    <!-- Footer (Identical to screenshot) -->
+    <footer class="popup-footer">
+      <span class="pure-protocol">Pure Web Protocol &bull; 100% Free &bull; Zero Telemetry</span>
     </footer>
   </div>
 
