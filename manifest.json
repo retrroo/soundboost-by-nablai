@@ -2,12 +2,11 @@
   "manifest_version": 3,
   "name": "SoundBoost by Nablai",
   "short_name": "SoundBoost",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Tab volume booster up to 600% with a 5-band parametric EQ, dynamics compressor anti-clipping, and custom profiles by Nablai.",
   "permissions": [
     "storage",
-    "activeTab",
-    "scripting"
+    "activeTab"
   ],
   "host_permissions": [
     "<all_urls>"

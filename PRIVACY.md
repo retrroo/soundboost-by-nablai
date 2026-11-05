@@ -33,7 +33,6 @@ SoundBoost requests only the minimal set of permissions required to function:
 | **`storage`** | Used exclusively to save your volume levels, equalizer presets, and active theme preference locally on your device using `chrome.storage.local`. This data never leaves your computer. |
 | **`activeTab`** | Used when you click the extension icon to identify the active tab's domain name (e.g. `youtube.com`) so volume preferences can be applied to that specific site. |
 | **`host_permissions` (`<all_urls>`)** | Used to hook into HTML5 `<video>` and `<audio>` elements across websites where media plays (e.g., YouTube, Twitch, Netflix, podcasts). Audio routing occurs strictly in-memory within the local Web Audio pipeline. |
-| **`scripting`** | Used to coordinate media element listeners and volume handlers across page navigations. |
 
 ---
 
